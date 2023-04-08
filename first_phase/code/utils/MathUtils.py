@@ -23,4 +23,7 @@ def getBestCorners(corner_score_images, N_best=100):
         best_corners = np.array(best_corners[0:N_best])[:, :2]
         ANMS_corners.append(np.int32(best_corners))
     return ANMS_corners
-            
+
+
+def computeSSD(vec1, vec2):
+    return np.sum((vec1 - vec2)**2)

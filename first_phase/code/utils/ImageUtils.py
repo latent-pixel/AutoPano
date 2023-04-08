@@ -38,7 +38,7 @@ def detectCornersHarris(images, show=False, save=False, save_path="../results/")
             if save:
                 if not os.path.exists(save_path):
                     os.makedirs(save_path)
-                    cv2.imwrite(save_path+"/HarrisCorners{idx}.jpg", temp_image)
+                    cv2.imwrite(save_path+"/HarrisCorners{}.jpg".format(idx), temp_image)
     return corner_score_images
 
 

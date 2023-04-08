@@ -13,6 +13,8 @@ import numpy as np
 import cv2
 from utils.ImageUtils import *
 from utils.MathUtils import *
+from FeatureDescriptors import *
+from utils.PlotUtils import *
 # Add any python libraries here
 
 
@@ -38,23 +40,31 @@ def main():
 	Save ANMS output as anms.png
 	"""
     ANMS_corners = getBestCorners(C_imgs)
-    for i in range(len(ANMS_corners)):
-        temp_img = all_imgs[i].copy()
-        for coord in ANMS_corners[i]:
-            x, y = coord.ravel()
-            cv2.circle(temp_img, (x, y), 3, (0, 0, 255), -1)
-        cv2.imshow("Corners Image", temp_img)
-        cv2.waitKey()
+    # for i in range(len(ANMS_corners)):
+    #     temp_img = all_imgs[i].copy()
+    #     for coord in ANMS_corners[i]:
+    #         x, y = coord.ravel()
+    #         cv2.circle(temp_img, (x, y), 3, (0, 0, 255), -1)
+    #     cv2.imshow("Corners Image", temp_img)
+    #     cv2.waitKey()
     """
 	Feature Descriptors
 	Save Feature Descriptor output as FD.png
 	"""
-
+    # feature_descriptors = getFeatureDescriptors(all_imgs, ANMS_corners)
     """
 	Feature Matching
 	Save Feature Matching output as matching.png
 	"""
-
+    matches_ = FeatureMatching(all_imgs[0], all_imgs[1], ANMS_corners[0], ANMS_corners[1])
+    # print(matches_)
+    drawMatches(all_imgs[0], all_imgs[1], matches_)
+    # an_array = np.array([2, 2, 2, 2])
+    # an_array.reshape((len(an_array), -1))
+    # another_array = np.array([1, 1, 1, 1])
+    # another_array.reshape((len(another_array), -1))
+    # ssd = np.sum((an_array - another_array)**2)
+    # print(ssd)
     """
 	Refine: RANSAC, Estimate Homography
 	"""
