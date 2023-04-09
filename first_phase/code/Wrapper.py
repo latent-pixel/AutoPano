@@ -31,7 +31,10 @@ def main():
     Read a set of images for Panorama stitching
     """
     all_imgs = readImagesFromFolder("first_phase/data/Train/Set1", show=False)
-    img1, img2 = all_imgs[0], all_imgs[1]
+    img1, img2 = all_imgs[1], all_imgs[2]
+    h, w, c = img1.shape
+    # cv2.imshow("image1", img1)
+    # cv2.waitKey(0)
     """
 	Corner Detection
 	Save Corner detection output as corners.png
@@ -63,13 +66,20 @@ def main():
 	"""
     matches_ = FeatureMatching(img1, img2, corner_detector=corner_detect)
     drawMatches(img1, img2, matches_)
-    best_idx, best_H = getInliers(matches_)
-    best_matches = matches_[best_idx]
-    drawMatches(img1, img2, best_matches)
     """
 	Refine: RANSAC, Estimate Homography
 	"""
-
+    best_idx, best_H = getInliers(matches_)
+    best_matches = matches_[best_idx]
+    # drawMatches(img1, img2, best_matches)
+    H, masked = cv2.findHomography(best_matches[:, 0:2], best_matches[:, 2:4])
+    print("H:\n", H)
+    img1_warped, img2_padded = paddedWarping(img1, img2, H)
+    alpha = 0.5
+    blended_warped = cv2.addWeighted(img1_warped, alpha, img2_padded, 1 - alpha, 0, img2_padded)
+    cv2.imshow("Blended-Warped Image", blended_warped)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     """
 	Image Warping + Blending
 	Save Panorama output as mypano.png

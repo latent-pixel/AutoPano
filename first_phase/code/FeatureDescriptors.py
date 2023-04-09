@@ -11,7 +11,6 @@ def FeatureMatching(image1, image2, corner_detector):
         anms_corners = getBestCorners(C_imgs)
     else:
         anms_corners = detectCornersShiTomasi(sel_images)
-    # print(anms_corners)
     features1, features2 = getFeatureDescriptors(sel_images, anms_corners)
     matches = []
     for i in range(len(features1)):
@@ -21,7 +20,7 @@ def FeatureMatching(image1, image2, corner_detector):
             SSD.append([ssd, j])
         SSD.sort(key = lambda x: x[0])
         match_ratio = SSD[0][0]/SSD[1][0]
-        if match_ratio < 0.5:
+        if match_ratio < 0.75:
             j_sel = SSD[0][1]
             matches.append([anms_corners[0][i][0], anms_corners[0][i][1], anms_corners[1][j_sel][0], anms_corners[1][j_sel][1]])
     return np.array(matches)
@@ -50,7 +49,6 @@ def extractImagePatches(gray_image, centers, size=(40, 40)):
     padded_image = np.pad(gray_image, ((int(size[0]/2), ), (int(size[1]/2), )), 'constant')
     corner_patches = []
     for center in centers:
-        print(center)
         x, y = center[1], center[0]
         xp, yp = x+int(size[0]/2), y+int(size[0]/2)
         x1, x2 = int(xp-size[1]/2), int(xp+size[1]/2)

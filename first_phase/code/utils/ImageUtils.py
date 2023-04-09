@@ -7,9 +7,12 @@ from skimage.feature import peak_local_max
 def readImagesFromFolder(imdir, show=False):
     all_images = []
     for file in sorted(os.listdir(imdir)):
-        if ".jpg" in file:
+        if ".jpg" or ".jpeg" or ".png" in file:
             file_path = os.path.join(imdir, file)
             image = cv2.imread(file_path)
+            h, w, _ = image.shape
+            # if h > 1000 or w > 1000:
+            #     image = cv2.resize(image, (0, 0), fx = 0.2, fy = 0.2)
             all_images.append(image)
             if show:
                 cv2.imshow("image", image)
@@ -58,4 +61,36 @@ def detectCornersShiTomasi(images, show=False):
             cv2.destroyAllWindows()
     return all_corners
 
+
+def paddedWarping(src_image, dst_image, transform):
+    h, w, c = src_image.shape
+    h_dst, w_dst, c_dst = dst_image.shape
+    src_homo = np.array([[0, 0, 1], # left-top
+                    [h, 0, 1], # left-bottom
+                    [h, w, 1], # right-bottom
+                    [0, w, 1]]) # right-top
+    # src_homo = np.stack((src, np.ones((4, 1))), axis=1)
+    transformed_src = transform.dot(src_homo.T)
+    transformed_src = np.transpose(transformed_src / transformed_src[2, :])
+    x_max, x_min = np.max(transformed_src[:, 0]), np.min(transformed_src[:, 0])
+    y_max, y_min = np.max(transformed_src[:, 1]), np.min(transformed_src[:, 1])
+    pad_x = np.round(np.maximum(x_max, w_dst) - np.minimum(x_min, 0)).astype(int)
+    pad_y = np.round(np.maximum(y_max, h_dst) - np.minimum(y_min, 0)).astype(int)
+    padded_shape = (pad_y, pad_x, c_dst)
+    dst_padded = np.zeros(padded_shape, dtype=np.uint8)
     
+    # computing the updated transform and shifting the destination image
+    translation = np.eye(3, 3)
+    dst_x_min, dst_y_min = 0, 0
+    if x_min < 0:
+        translation[0, 2] = np.round(-x_min).astype(int)
+        dst_x_min = np.round(-x_min).astype(int)
+    if y_min < 0:
+        translation[1, 2] += np.round(-y_min).astype(int)
+        dst_y_min = np.round(-y_min).astype(int)
+    new_transform = translation.dot(transform)  # Important!
+    new_transform /= new_transform[2, 2]
+
+    dst_padded[dst_y_min:dst_y_min+h_dst, dst_x_min:dst_x_min+w_dst] = dst_image
+    src_warped = cv2.warpPerspective(src_image, new_transform, (pad_x, pad_y))
+    return src_warped, dst_padded
