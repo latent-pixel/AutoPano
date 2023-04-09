@@ -66,15 +66,14 @@ def paddedWarping(src_image, dst_image, transform):
     h, w, c = src_image.shape
     h_dst, w_dst, c_dst = dst_image.shape
     src_homo = np.array([[0, 0, 1], # left-top
-                    [h, 0, 1], # left-bottom
-                    [h, w, 1], # right-bottom
-                    [0, w, 1]]) # right-top
-    # src_homo = np.stack((src, np.ones((4, 1))), axis=1)
+                        [h, 0, 1], # left-bottom
+                        [h, w, 1], # right-bottom
+                        [0, w, 1]]) # right-top
     transformed_src = transform.dot(src_homo.T)
     transformed_src = np.transpose(transformed_src / transformed_src[2, :])
     x_max, x_min = np.max(transformed_src[:, 0]), np.min(transformed_src[:, 0])
     y_max, y_min = np.max(transformed_src[:, 1]), np.min(transformed_src[:, 1])
-    pad_x = np.round(np.maximum(x_max, w_dst) - np.minimum(x_min, 0)).astype(int)
+    pad_x = np.round(np.maximum(x_max, w_dst) - np.minimum(x_min, 0)).astype(int)   # check!
     pad_y = np.round(np.maximum(y_max, h_dst) - np.minimum(y_min, 0)).astype(int)
     padded_shape = (pad_y, pad_x, c_dst)
     dst_padded = np.zeros(padded_shape, dtype=np.uint8)

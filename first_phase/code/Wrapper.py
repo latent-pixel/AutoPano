@@ -3,7 +3,7 @@
 """
 Author(s):
 Bhargav Kumar Soothram (bsoothra@umd.edu)
-M.Eng. in Robotics,
+M.Eng. Robotics,
 University of Maryland
 """
 
@@ -27,25 +27,16 @@ def main():
     # Args = Parser.parse_args()
     # NumFeatures = Args.NumFeatures
 
-    """
-    Read a set of images for Panorama stitching
-    """
     all_imgs = readImagesFromFolder("first_phase/data/Train/Set1", show=False)
     img1, img2 = all_imgs[1], all_imgs[2]
     h, w, c = img1.shape
     # cv2.imshow("image1", img1)
     # cv2.waitKey(0)
-    """
-	Corner Detection
-	Save Corner detection output as corners.png
-	"""
+
     corner_algs = {"Harris":0, "ShiTomasi":1} 
     corner_detect = corner_algs["Harris"]
     # C_imgs = detectCornersHarris(all_imgs, show=False)
-    """
-	Perform ANMS: Adaptive Non-Maximal Suppression
-	Save ANMS output as anms.png
-	"""
+
     # ANMS_corners = detectCornersShiTomasi(all_imgs)
     # print(ANMS_corners[0].squeeze())
     # for i in range(len(ANMS_corners)):
@@ -55,20 +46,12 @@ def main():
     #         cv2.circle(temp_img, (x, y), 3, (0, 0, 255), -1)
     #     cv2.imshow("Corners Image", temp_img)
     #     cv2.waitKey()
-    """
-	Feature Descriptors
-	Save Feature Descriptor output as FD.png
-	"""
+
     # feature_descriptors = getFeatureDescriptors(all_imgs, ANMS_corners)
-    """
-	Feature Matching
-	Save Feature Matching output as matching.png
-	"""
+
     matches_ = FeatureMatching(img1, img2, corner_detector=corner_detect)
     drawMatches(img1, img2, matches_)
-    """
-	Refine: RANSAC, Estimate Homography
-	"""
+
     best_idx, best_H = getInliers(matches_)
     best_matches = matches_[best_idx]
     # drawMatches(img1, img2, best_matches)
@@ -80,10 +63,6 @@ def main():
     cv2.imshow("Blended-Warped Image", blended_warped)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    """
-	Image Warping + Blending
-	Save Panorama output as mypano.png
-	"""
 
 
 if __name__ == "__main__":
