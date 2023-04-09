@@ -13,8 +13,9 @@ import numpy as np
 import cv2
 from utils.ImageUtils import *
 from utils.MathUtils import *
-from FeatureDescriptors import *
 from utils.PlotUtils import *
+from FeatureDescriptors import *
+from GetInliersRANSAC import *
 # Add any python libraries here
 
 
@@ -30,16 +31,20 @@ def main():
     Read a set of images for Panorama stitching
     """
     all_imgs = readImagesFromFolder("first_phase/data/Train/Set1", show=False)
+    img1, img2 = all_imgs[0], all_imgs[1]
     """
 	Corner Detection
 	Save Corner detection output as corners.png
 	"""
-    C_imgs = detectCornersHarris(all_imgs, show=False)
+    corner_algs = {"Harris":0, "ShiTomasi":1} 
+    corner_detect = corner_algs["Harris"]
+    # C_imgs = detectCornersHarris(all_imgs, show=False)
     """
 	Perform ANMS: Adaptive Non-Maximal Suppression
 	Save ANMS output as anms.png
 	"""
-    ANMS_corners = getBestCorners(C_imgs)
+    # ANMS_corners = detectCornersShiTomasi(all_imgs)
+    # print(ANMS_corners[0].squeeze())
     # for i in range(len(ANMS_corners)):
     #     temp_img = all_imgs[i].copy()
     #     for coord in ANMS_corners[i]:
@@ -56,15 +61,11 @@ def main():
 	Feature Matching
 	Save Feature Matching output as matching.png
 	"""
-    matches_ = FeatureMatching(all_imgs[0], all_imgs[1], ANMS_corners[0], ANMS_corners[1])
-    # print(matches_)
-    drawMatches(all_imgs[0], all_imgs[1], matches_)
-    # an_array = np.array([2, 2, 2, 2])
-    # an_array.reshape((len(an_array), -1))
-    # another_array = np.array([1, 1, 1, 1])
-    # another_array.reshape((len(another_array), -1))
-    # ssd = np.sum((an_array - another_array)**2)
-    # print(ssd)
+    matches_ = FeatureMatching(img1, img2, corner_detector=corner_detect)
+    drawMatches(img1, img2, matches_)
+    best_idx, best_H = getInliers(matches_)
+    best_matches = matches_[best_idx]
+    drawMatches(img1, img2, best_matches)
     """
 	Refine: RANSAC, Estimate Homography
 	"""

@@ -42,16 +42,20 @@ def detectCornersHarris(images, show=False, save=False, save_path="../results/")
     return corner_score_images
 
 
-def detectCornersShiTomasi(image, show=False):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    corners = cv2.goodFeaturesToTrack(gray, 1000, 0.01, 10)
-    corners = np.int0(corners)
-    if show:
-        for i in corners:
-            x, y = i.ravel()
-            cv2.circle(image, (x, y), 3, (0, 0, 255), -1)
-        cv2.imshow("Corners Image", image)
-        cv2.waitKey()
-        cv2.destroyAllWindows()
+def detectCornersShiTomasi(images, show=False):
+    all_corners = []
+    for image in images:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        corners = cv2.goodFeaturesToTrack(gray, 1000, 0.01, 10)
+        corners = np.int32(corners)
+        all_corners.append(corners.squeeze())
+        if show:
+            for i in corners:
+                x, y = i.ravel()
+                cv2.circle(image, (x, y), 3, (0, 0, 255), -1)
+            cv2.imshow("Corners Image", image)
+            cv2.waitKey()
+            cv2.destroyAllWindows()
+    return all_corners
 
     
