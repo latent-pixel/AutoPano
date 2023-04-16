@@ -7,16 +7,16 @@ M.Eng. Robotics,
 University of Maryland
 """
 
-# Code starts here:
 
 import numpy as np
 import cv2
 from utils.ImageUtils import *
 from utils.MathUtils import *
 from utils.PlotUtils import *
+from CornerDetect import *
 from FeatureDescriptors import *
 from GetInliersRANSAC import *
-# Add any python libraries here
+from WarpnBlend import *
 
 
 def main():
@@ -26,44 +26,50 @@ def main():
 
     # Args = Parser.parse_args()
     # NumFeatures = Args.NumFeatures
-
-    all_imgs = readImagesFromFolder("first_phase/data/Train/Set1", show=False)
-    img1, img2 = all_imgs[1], all_imgs[2]
-    h, w, c = img1.shape
-    # cv2.imshow("image1", img1)
-    # cv2.waitKey(0)
-
     corner_algs = {"Harris":0, "ShiTomasi":1} 
-    corner_detect = corner_algs["Harris"]
-    # C_imgs = detectCornersHarris(all_imgs, show=False)
-
-    # ANMS_corners = detectCornersShiTomasi(all_imgs)
-    # print(ANMS_corners[0].squeeze())
-    # for i in range(len(ANMS_corners)):
-    #     temp_img = all_imgs[i].copy()
-    #     for coord in ANMS_corners[i]:
-    #         x, y = coord.ravel()
-    #         cv2.circle(temp_img, (x, y), 3, (0, 0, 255), -1)
-    #     cv2.imshow("Corners Image", temp_img)
-    #     cv2.waitKey()
-
-    # feature_descriptors = getFeatureDescriptors(all_imgs, ANMS_corners)
-
-    matches_ = FeatureMatching(img1, img2, corner_detector=corner_detect)
-    drawMatches(img1, img2, matches_)
-
-    best_idx, best_H = getInliers(matches_)
-    best_matches = matches_[best_idx]
-    # drawMatches(img1, img2, best_matches)
-    H, masked = cv2.findHomography(best_matches[:, 0:2], best_matches[:, 2:4])
-    print("H:\n", H)
-    img1_warped, img2_padded = paddedWarping(img1, img2, H)
+    corner_detect = corner_algs["ShiTomasi"]
     alpha = 0.5
-    blended_warped = cv2.addWeighted(img1_warped, alpha, img2_padded, 1 - alpha, 0, img2_padded)
-    cv2.imshow("Blended-Warped Image", blended_warped)
+    all_imgs = readImagesFromFolder("first_phase/data/Train/Set1", show=False)
+    # panorama = createPanorama(all_imgs[:5], corner_detect)
+    # cv2.imwrite('first_phase/panorama.png', panorama)
+
+    # Load input images
+    # all_imgs.reverse()
+    # all_imgs = all_imgs[3:]
+    # Loop until only one image left in the list
+    # while len(all_imgs) > 1:
+    #     print(len(all_imgs))
+    #     # Select a pair of images
+    #     dst_image = all_imgs.pop(0)
+    #     src_image = all_imgs.pop(0)
+        
+    #     # Compute image registration
+    #     matches = FeatureMatching(dst_image, src_image, corner_detect)
+    #     best_idx, best_H = getInliers(matches)
+        
+    #     # Warp and blend
+    #     pano = paddedWarping(dst_image, src_image, best_H)
+    #     pano = pano.astype('uint8')
+        
+    #     # Update the image list
+    #     all_imgs.insert(0, pano)
+ 
+    # # Final panorama
+    # final_panorama = all_imgs[0]
+    # # cv2.imshow("panorama", final_panorama)
+    # # cv2.waitKey(0)
+    # # cv2.destroyAllWindows()
+
+    # cv2.imwrite('first_phase/panorama.png', final_panorama)
+
+    test_image = all_imgs[0]
+    image_cyl, mask_x, mask_y = projectOntoCylinder(test_image)
+    
+    # image_mask = np.zeros(image_cyl.shape, dtype=np.uint8)
+    # image_mask[mask_y, mask_x, :] = 255
+    cv2.imshow("projection", image_cyl)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
 
 if __name__ == "__main__":
     main()

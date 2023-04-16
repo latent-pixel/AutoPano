@@ -1,6 +1,6 @@
 # My AutoPano
 
-In this project, we stitch images together using traditional feature matching and deep learning methods. The `first_phase` folder contains the implementation for feature matching method and the deep learning method is a work in progress.
+In this project, we stitch images together using traditional feature matching and deep learning methods.
 
 ## **Phase-1: Feature Matching**
 
