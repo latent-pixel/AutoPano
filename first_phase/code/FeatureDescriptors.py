@@ -20,7 +20,7 @@ def FeatureMatching(image1, image2, corner_detector):
             SSD.append([ssd, j])
         SSD.sort(key = lambda x: x[0])
         match_ratio = SSD[0][0]/SSD[1][0]
-        if match_ratio < 0.80:
+        if match_ratio < 0.75:
             j_sel = SSD[0][1]
             matches.append([anms_corners[0][i][0], anms_corners[0][i][1], anms_corners[1][j_sel][0], anms_corners[1][j_sel][1]])
     return np.array(matches)

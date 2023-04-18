@@ -19,6 +19,17 @@ from GetInliersRANSAC import *
 from WarpnBlend import *
 
 
+def stitchTwoImages(image1, image2, corner_detector):
+    matches = FeatureMatching(image1, image2, corner_detector)
+    best_idx, _ = getInliers(matches, n_iter=1500, eps=10)
+    best_matches = matches[best_idx]
+    print(best_matches.shape)
+    best_H, mask = cv2.findHomography(best_matches[:, :2], best_matches[:, 2:4])
+    pano = paddedWarping(image1, image2, best_H)
+    pano = pano.astype('uint8')
+    return pano
+
+
 def main():
     # Add any Command Line arguments here
     # Parser = argparse.ArgumentParser()
@@ -28,48 +39,74 @@ def main():
     # NumFeatures = Args.NumFeatures
     corner_algs = {"Harris":0, "ShiTomasi":1} 
     corner_detect = corner_algs["ShiTomasi"]
+    f = 800
     alpha = 0.5
-    all_imgs = readImagesFromFolder("first_phase/data/Train/Set1", show=False)
-    # panorama = createPanorama(all_imgs[:5], corner_detect)
-    # cv2.imwrite('first_phase/panorama.png', panorama)
+    all_imgs = readImagesFromFolder("first_phase/data/Test", show=False)
 
-    # Load input images
-    # all_imgs.reverse()
-    # all_imgs = all_imgs[3:]
     # Loop until only one image left in the list
-    # while len(all_imgs) > 1:
-    #     print(len(all_imgs))
-    #     # Select a pair of images
-    #     dst_image = all_imgs.pop(0)
-    #     src_image = all_imgs.pop(0)
-        
-    #     # Compute image registration
-    #     matches = FeatureMatching(dst_image, src_image, corner_detect)
-    #     best_idx, best_H = getInliers(matches)
-        
-    #     # Warp and blend
-    #     pano = paddedWarping(dst_image, src_image, best_H)
-    #     pano = pano.astype('uint8')
-        
-    #     # Update the image list
-    #     all_imgs.insert(0, pano)
- 
-    # # Final panorama
-    # final_panorama = all_imgs[0]
-    # # cv2.imshow("panorama", final_panorama)
-    # # cv2.waitKey(0)
-    # # cv2.destroyAllWindows()
+    # all_imgs = all_imgs[:3]
+    N = len(all_imgs)
+    if N > 3:
+        left = all_imgs[: N // 2]
+        while len(left) > 1:
+            print("evaluating left pano", len(left))
+            # Select a pair of images
+            dst_image = left.pop(0)
+            src_image = left.pop(0)
 
-    # cv2.imwrite('first_phase/panorama.png', final_panorama)
+            dst_image, _, _ = projectOntoCylinder(dst_image, f)
+            src_image, _, _ = projectOntoCylinder(src_image, f)
+            
+            pano = stitchTwoImages(dst_image, src_image, corner_detect) 
+            left.insert(0, pano) # Update the image list
+        left_panorama = left[0]
+        
+        right = all_imgs[N//2 :]
+        # right.reverse()
+        while len(right) > 1:
+            print("evaluating right pano", len(right))
+            # Select a pair of images
+            dst_image = right.pop(0)
+            src_image = right.pop(0)
 
-    test_image = all_imgs[0]
-    image_cyl, mask_x, mask_y = projectOntoCylinder(test_image)
-    
-    # image_mask = np.zeros(image_cyl.shape, dtype=np.uint8)
-    # image_mask[mask_y, mask_x, :] = 255
-    cv2.imshow("projection", image_cyl)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+            dst_image, _, _ = projectOntoCylinder(dst_image, f)
+            src_image, _, _ = projectOntoCylinder(src_image, f)
+
+            pano = stitchTwoImages(dst_image, src_image, corner_detect)
+            right.insert(0, pano)
+        right_panorama = right[0]
+
+        final_panorama = stitchTwoImages(left_panorama, right_panorama, corner_detect)  # Final panorama
+        # cv2.imshow("panorama", final_panorama)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+
+        cv2.imwrite('first_phase/testing_panorama.png', final_panorama)
+        
+
+    else:
+        while len(all_imgs) > 1:
+            print(len(all_imgs))
+            # Select a pair of images
+            dst_image = all_imgs.pop(0)
+            src_image = all_imgs.pop(0)
+
+            # dst_image, _, _ = projectOntoCylinder(dst_image, f)
+            # src_image, _, _ = projectOntoCylinder(src_image, f)
+
+            pano = stitchTwoImages(dst_image, src_image, corner_detect)
+
+            # Update the image list
+            all_imgs.insert(0, pano)
+        
+        # Final panorama
+        final_panorama = all_imgs[0]
+        cv2.imshow("panorama", final_panorama)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+        # cv2.imwrite('first_phase/testing_panorama.png', final_panorama)
+
 
 if __name__ == "__main__":
     main()

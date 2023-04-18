@@ -11,8 +11,8 @@ def readImagesFromFolder(imdir, show=False):
             file_path = os.path.join(imdir, file)
             image = cv2.imread(file_path)
             h, w, _ = image.shape
-            # if h > 1000 or w > 1000:
-            #     image = cv2.resize(image, (0, 0), fx = 0.2, fy = 0.2)
+            if h > 1000 or w > 1000:
+                image = cv2.resize(image, (0, 0), fx = 0.2, fy = 0.2)
             all_images.append(image)
             if show:
                 cv2.imshow("image", image)
@@ -21,7 +21,7 @@ def readImagesFromFolder(imdir, show=False):
     return all_images
 
 
-def projectOntoCylinder(image, f=500):
+def projectOntoCylinder(image, f):
 
     h, w, c = image.shape
     yc, xc = h // 2, w // 2

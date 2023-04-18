@@ -3,7 +3,7 @@ import cv2
 from utils.MathUtils import *
 
 
-def getInliers(matches, n_iter = 2000, eps = 5):
+def getInliers(matches, n_iter = 1000, eps = 10):
     inliers_idx = []
     best_H = None
     for i in range(n_iter):
@@ -15,8 +15,8 @@ def getInliers(matches, n_iter = 2000, eps = 5):
             p1 = np.array([matches[j, 0], matches[j, 1], 1.]).reshape((3, -1))
             p2 = np.array([matches[j, 2], matches[j, 3], 1.]).reshape((3, -1))
             H_p1 = np.dot(H, p1)
-            H_p1 = H_p1 / (H_p1[-1] + 1e-06)
-            if np.sqrt(computeSSD(p2, H_p1)) < eps:
+            H_p1 = H_p1 / (H_p1[-1] + 1e-10)
+            if computeSSD(p2, H_p1) < eps:
                 s.append(j)
         if len(inliers_idx) < len(s):
             inliers_idx = s
