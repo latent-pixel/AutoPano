@@ -1,8 +1,8 @@
 # My AutoPano
 
-In this project, we stitch images together using traditional feature matching and deep learning methods.
+We try and stitch images together using traditional feature matching and deep learning methods.
 
-## **Phase-1: Feature Matching**
+## **Feature Matching Method**
 
 **1.1. Identify corners in the images using corner detection algorithms like `Harris` or `Shi-Tomasi`.**
     

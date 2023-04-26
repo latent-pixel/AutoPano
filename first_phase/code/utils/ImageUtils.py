@@ -1,7 +1,6 @@
 import numpy as np
 import cv2
 import os
-from skimage.feature import peak_local_max
 
 
 def readImagesFromFolder(imdir, show=False):

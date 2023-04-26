@@ -1,9 +1,8 @@
 import numpy as np
-import cv2
 from skimage.feature import peak_local_max
 
 
-def getBestCorners(corner_score_images, N_best=500):
+def getANMSCorners(corner_score_images, N_best=500):
     ANMS_corners = []
     for C_img in corner_score_images:
         coordinates = peak_local_max(C_img, min_distance=8)
@@ -21,7 +20,7 @@ def getBestCorners(corner_score_images, N_best=500):
             best_corners.append([yi, xi, ri])
         best_corners.sort(key=lambda x: x[2], reverse=True)
         best_corners = np.array(best_corners[0:N_best])[:, :2]
-        ANMS_corners.append(np.int0(best_corners))
+        ANMS_corners.append(np.int32(best_corners))
     return ANMS_corners
 
 

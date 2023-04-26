@@ -7,8 +7,9 @@
   - [ ] Feature Matches
   - [ ] RANSAC
   - [ ] Warped and Blended (Panorama)
-- [ ] Rearrange code for better readability.
-- [ ] Add functionality to stitch any number of images.
-- [ ] Add functionality to deal with very large images.
-- [ ] Plan B when `Harris` and `Shi-Tomasi` detectors fail. 
-- [ ] Poisson Blending
+- [x] Rearrange code for better readability.
+- [ ] Blending for cylindrical projections.
+- [x] Add functionality to stitch any number of images.
+- [x] Add functionality to deal with very large images.
+- [X] Plan B when `Harris` and `Shi-Tomasi` detectors fail
+- [ ] Multi-band blending

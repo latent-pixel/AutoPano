@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-from FeatureDescriptors import *
 
 
 def paddedWarping(src_image, dst_image, transform):
@@ -16,8 +15,8 @@ def paddedWarping(src_image, dst_image, transform):
     y_max, y_min = max(transformed_src[:, 1]), min(transformed_src[:, 1])
     pad_x = np.ceil(max(x_max, w_dst) - min(x_min, 0)).astype(int)   # check!
     pad_y = np.ceil(max(y_max, h_dst) - min(y_min, 0)).astype(int)
-    padded_shape = (pad_y, pad_x, c_dst)
-    dst_padded = np.zeros(padded_shape, dtype=np.uint8)
+    # padded_shape = (pad_y, pad_x, c_dst)
+    # dst_padded = np.zeros(padded_shape, dtype=np.uint8)
     
     # computing the updated transform and shifting the destination image
     translation = np.eye(3, 3)
