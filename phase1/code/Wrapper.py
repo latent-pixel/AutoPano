@@ -17,6 +17,7 @@ from CornerDetect import *
 from FeatureMatching import *
 from GetInliersRANSAC import *
 from WarpnBlend import *
+from StitchImages import stitchImages
 
 
 def stitchTwoImages(image1, image2, features=None, corner_detector=None):
@@ -69,13 +70,16 @@ def main():
     feature_detector = {"patch":0, "sift":1}
     feat = feature_detector["patch"]
     if feat == 0:
-        corner_detect = corner_algs["ShiTomasi"]
-    f = 800
-    all_imgs = readImagesFromFolder("first_phase/data/Train/Set1", show=False)
-    imgs_harris = detectCornersHarris(all_imgs, save=True)
-    imgs_ShiTomasi = detectCornersShiTomasi(all_imgs, save=True)
+        corner_detect = corner_algs["Harris"]
+
+    f = 1000
+    all_imgs = readImagesFromFolder("phase1/data/Train/Set3", show=False)
+
+    # imgs_harris = detectCornersHarris(all_imgs, save=True)
+    # imgs_ShiTomasi = detectCornersShiTomasi(all_imgs, save=True)
+
     # Loop until only one image left in the list
-    # all_imgs = all_imgs
+    # all_imgs = all_imgs[:2]
     N = len(all_imgs)
     if N > 3:
         left = all_imgs[: N // 2]
@@ -88,7 +92,7 @@ def main():
             # dst_image, _, _ = projectOntoCylinder(dst_image, f)
             # src_image, _, _ = projectOntoCylinder(src_image, f)
             
-            pano = stitchTwoImages(dst_image, src_image, feat, corner_detect) 
+            pano = stitchImages(dst_image, src_image, f, feat, corner_detect) 
             left.insert(0, pano) # Update the image list
         left_panorama = left[0]
         
@@ -103,13 +107,13 @@ def main():
             # dst_image, _, _ = projectOntoCylinder(dst_image, f)
             # src_image, _, _ = projectOntoCylinder(src_image, f)
 
-            pano = stitchTwoImages(dst_image, src_image, feat, corner_detect)
+            pano = stitchImages(dst_image, src_image, f, feat, corner_detect)
             right.insert(0, pano)
         right_panorama = right[0]
 
-        final_panorama = stitchTwoImages(left_panorama, right_panorama, feat, corner_detect)  # Final panorama
+        final_panorama = stitchImages(left_panorama, right_panorama, f, feat, corner_detect)  # Final panorama
 
-        cv2.imwrite('first_phase/testing_panorama.png', final_panorama) 
+        cv2.imwrite('phase1/testing_panorama.png', final_panorama) 
 
     else:
         while len(all_imgs) > 1:
@@ -121,18 +125,19 @@ def main():
             # dst_image, _, _ = projectOntoCylinder(dst_image, f)
             # src_image, _, _ = projectOntoCylinder(src_image, f)
 
-            pano = stitchTwoImages(dst_image, src_image, feat, corner_detect)
+            pano = stitchImages(src_image, dst_image, f, feat, corner_detect)
+            # pano = stitchTwoImages(dst_image, src_image, feat, corner_detect)
 
             # Update the image list
             all_imgs.insert(0, pano)
         
         # Final panorama
         final_panorama = all_imgs[0]
-        # cv2.imshow("panorama", final_panorama)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+        cv2.imshow("panorama", final_panorama)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
-        cv2.imwrite('first_phase/testing_panorama.png', final_panorama)
+        # cv2.imwrite('first_phase/testing_panorama.png', final_panorama)
 
 
 if __name__ == "__main__":

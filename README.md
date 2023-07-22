@@ -1,17 +1,34 @@
-# My AutoPano
+# AutoPano
+The aim of this project is to stitch two or more images (with 30-50% overlap) together to create one seamless panorama image. In the first phase, we use the traditional feature descriptors method, and in the second phase, we take a deep learning approach for homography estimation. 
 
-We try and stitch images together using traditional feature matching and deep learning methods.
+## Setting up the package
+This package was built using Python 3.7, Pytorch and OpenCV on Ubuntu 20.04. Follow the instructions on [this](https://pytorch.org/get-started/locally/) page to setup Pytorch and [this](https://docs.opencv.org/3.4/d2/de6/tutorial_py_setup_in_ubuntu.html) page to setup OpenCV for Ubuntu. Other packages include `matplotlib`, `scipy` and `scikitlearn`. These are relatively easy to install using `pip install *package_name*`. 
 
-## **Feature Matching Method**
+Download the package:
+```
+git clone git@github.com:latent-pixel/AutoPano.git
+```
 
-**1.1. Identify corners in the images using corner detection algorithms like `Harris` or `Shi-Tomasi`.**
-    
-**1.2. Apply Adaptive Non-Maximal Suppression (ANMS) on the detected corners to ensure that the corners are evenly spread out.**
+## Phase I: Stitching Images via Feature Descriptor Method
+The correspondences between two images are computed using feature descriptors, which are in turn computed by using Adaptive Non-Maximal Suppression (ANMS) on corners detected using traditional corner detection methods such as Harris Corners.
 
-**1.3. Find the feature descriptors (feature vectors) corresponding to each of the ANMS corners.**
+### Running the package
 
-**1.4. Match these feature vectors based on the sum of squared distances between the vectors (smaller is better).**
+From the package's root directory, use the following command to run it:
+```
+python3 phase1/code/Wrapper.py
+```
+The results can then be found in a separate `results` folder in the package.
 
-**1.5. Filter outliers using RANSAC on the obtained feature matches and compute the homography using the inliers.**
+### Results
 
-**1.6. Warp and blend the images.**
+After Non-Maximal Suppression, 
+Harris Corners            |  Shi-Tomasi Corners
+:-------------------------:|:-------------------------:
+![](phase1/results/HarrisCorners1.jpg)  |  ![](phase1/results/STCorners1.jpg)
+
+Finally, the panoramas created:
+Set 1            |  Set 2             |  Set 3
+:-------------------------:|:-------------------------:|:-------------------------:
+![](phase1/results/result_set1.png)  |  ![](phase1/results/result_set2.png)  |  ![](phase1/results/result_set3_prelim.png)
+
