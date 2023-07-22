@@ -28,7 +28,15 @@ Harris Corners            |  Shi-Tomasi Corners
 ![](phase1/results/HarrisCorners1.jpg)  |  ![](phase1/results/STCorners1.jpg)
 
 Finally, the panoramas created:
-Set 1            |  Set 2             |  Set 3
-:-------------------------:|:-------------------------:|:-------------------------:
-![](phase1/results/result_set1.png)  |  ![](phase1/results/result_set2.png)  |  ![](phase1/results/result_set3_prelim.png)
-
+<table style="width:100%">
+  <tr>
+  <th>Set 1</th>
+  <th>Set 2</th>
+  <th>Set 3</th>
+  </tr>
+  <tr>
+    <td style="width: 33%"><img src="phase1/results/result_set1.png" width="100%" /></td>
+    <td style="width: 33%"><img src="phase1/results/result_set2.png" width="100%" /></td>
+    <td style="width: 34%"><img src="phase1/results/result_set3_prelim.png" width="100%" /></td>
+  </tr>
+</table>
