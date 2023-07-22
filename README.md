@@ -32,11 +32,9 @@ Finally, the panoramas created:
   <tr>
   <th>Set 1</th>
   <th>Set 2</th>
-  <th>Set 3</th>
   </tr>
   <tr>
-    <td style="width: 33%"><img src="phase1/results/result_set1.png" width="100%" /></td>
-    <td style="width: 33%"><img src="phase1/results/result_set2.png" width="100%" /></td>
-    <td style="width: 34%"><img src="phase1/results/result_set3_prelim.png" width="100%" /></td>
+    <td style="width: 50%"><img src="phase1/results/result_set1.png" width="100%" /></td>
+    <td style="width: 50%"><img src="phase1/results/result_set2.png" width="100%" /></td>
   </tr>
 </table>
